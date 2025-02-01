@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+*.pyd
+
+# Virtual environment
+env/
+venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Generated data and plots
+generated_data/
+generated_data_tex/
+plots/
+data/
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Python egg files
+*.egg
+*.egg-info
+.eggs/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# macOS files
+*.DS_Store
+
+# Python virtual environment
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environment variables
+.env
+
+# Auxiliary code
+dummy_py_files.py
+bayes_opt.py
+copy_and_clean_generated_data.py
