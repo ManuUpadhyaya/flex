@@ -43,33 +43,33 @@ def setup_problem_configurations():
     """
     problem_configurations = []
 
-    # problem_configurations.append(setup_problem_qmp_n20_alpha0()) # Quadratic minimax problem: n=20, alpha=0
+    problem_configurations.append(setup_problem_qmp_n20_alpha0()) # Quadratic minimax problem: n=20, alpha=0
 
-    # problem_configurations.append(setup_problem_qmp_n20_alpha_pos()) # Quadratic minimax problem: n=20, alpha=0.0001
+    problem_configurations.append(setup_problem_qmp_n20_alpha_pos()) # Quadratic minimax problem: n=20, alpha=0.0001
 
-    # problem_configurations.append(setup_problem_qmp_n500_alpha0()) # Quadratic minimax problem: n=500, alpha=0
+    problem_configurations.append(setup_problem_qmp_n500_alpha0()) # Quadratic minimax problem: n=500, alpha=0
 
-    # problem_configurations.append(setup_problem_qmp_n500_alpha_pos()) # Quadratic minimax problem: n=500, alpha=0.0001
+    problem_configurations.append(setup_problem_qmp_n500_alpha_pos()) # Quadratic minimax problem: n=500, alpha=0.0001
 
-    # problem_configurations.append(setup_problem_cnep_n10()) # Cournot-Nash Equilibrium Problem: n=10
+    problem_configurations.append(setup_problem_cnep_n10()) # Cournot-Nash Equilibrium Problem: n=10
 
-    # problem_configurations.append(setup_problem_cnep_n100()) # Cournot-Nash Equilibrium Problem: n=100
+    problem_configurations.append(setup_problem_cnep_n100()) # Cournot-Nash Equilibrium Problem: n=100
 
-    # problem_configurations.append(setup_problem_logistic_data_a9a_lambda_100_over_N()) # Logistic Regression Problem: data_name = 'a9a', lambda = 100/N
+    problem_configurations.append(setup_problem_logistic_data_a9a_lambda_100_over_N()) # Logistic Regression Problem: data_name = 'a9a', lambda = 100/N
 
-    # problem_configurations.append(setup_problem_logistic_data_a9a_lambda_10_over_N()) # Logistic Regression Problem: data_name = 'a9a', lambda = 10/N
+    problem_configurations.append(setup_problem_logistic_data_a9a_lambda_10_over_N()) # Logistic Regression Problem: data_name = 'a9a', lambda = 10/N
 
-    # problem_configurations.append(setup_problem_logistic_data_a9a_lambda_1_over_N()) # Logistic Regression Problem: data_name = 'a9a', lambda = 1/N
+    problem_configurations.append(setup_problem_logistic_data_a9a_lambda_1_over_N()) # Logistic Regression Problem: data_name = 'a9a', lambda = 1/N
 
-    # problem_configurations.append(setup_problem_logistic_data_spambase_lambda_100_over_N()) # Logistic Regression Problem: data_name = 'spambase', lambda = 100/N
+    problem_configurations.append(setup_problem_logistic_data_spambase_lambda_100_over_N()) # Logistic Regression Problem: data_name = 'spambase', lambda = 100/N
 
-    # problem_configurations.append(setup_problem_logistic_data_spambase_lambda_10_over_N()) # Logistic Regression Problem: data_name = 'spambase', lambda = 10/N
+    problem_configurations.append(setup_problem_logistic_data_spambase_lambda_10_over_N()) # Logistic Regression Problem: data_name = 'spambase', lambda = 10/N
     
-    # problem_configurations.append(setup_problem_logistic_data_spambase_lambda_1_over_N()) # Logistic Regression Problem: data_name = 'spambase', lambda = 1/N
+    problem_configurations.append(setup_problem_logistic_data_spambase_lambda_1_over_N()) # Logistic Regression Problem: data_name = 'spambase', lambda = 1/N
 
-    # problem_configurations.append(setup_problem_bmg_n500()) # Bilinear matrix game: n = 500
+    problem_configurations.append(setup_problem_bmg_n500()) # Bilinear matrix game: n = 500
 
-    # problem_configurations.append(setup_problem_bmg_n250()) # Bilinear matrix game: n = 250
+    problem_configurations.append(setup_problem_bmg_n250()) # Bilinear matrix game: n = 250
     
     return problem_configurations
 
