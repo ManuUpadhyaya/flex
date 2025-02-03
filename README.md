@@ -1,4 +1,4 @@
-# A Lyapunov Analysis of Korpelevich’s Extragradient Method
+# Fast line-search extragradient
 
 This repository contains the source code used to reproduce the experiments in:
 
@@ -7,7 +7,7 @@ This repository contains the source code used to reproduce the experiments in:
 **arXiv Link**: [coming soon](https://arxiv.org/abs/placeholder)
 
 **Abstract**  
-We present a Lyapunov analysis of Korpelevich’s extragradient method, establishing an O(1/k) last-iterate convergence rate. Building on this framework, we propose flexible extensions that combine extragradient steps with user-specified directions, guided by a line-search procedure derived from the same Lyapunov analysis. These methods retain global convergence under practical assumptions and can achieve superlinear rates when directions are chosen appropriately. Numerical experiments highlight the simplicity and efficiency of this approach, underscoring its potential in large-scale and structured settings.
+We present a Lyapunov analysis of Korpelevich’s extragradient method and establish an O(1/k) last-iterate convergence rate. Building on this, we propose flexible extensions that combine extragradient steps with user-specified directions, guided by a line-search procedure derived from the same Lyapunov analysis. These methods retain global convergence under practical assumptions and can achieve superlinear rates when directions are chosen appropriately. Numerical experiments highlight the simplicity and efficiency of this approach.
 
 ---
 
