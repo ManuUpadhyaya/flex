@@ -6,9 +6,6 @@ This repository contains the source code used to reproduce the experiments in:
 **Authors**: Manu Upadhyaya, Puya Latafat, Pontus Giselsson  
 **arXiv Link**: [https://arxiv.org/abs/2502.00119](https://arxiv.org/abs/2502.00119)
 
-**Abstract**  
-We present a Lyapunov analysis of Korpelevich’s extragradient method and establish an O(1/k) last-iterate convergence rate. Building on this, we propose flexible extensions that combine extragradient steps with user-specified directions, guided by a line-search procedure derived from the same Lyapunov analysis. These methods retain global convergence under practical assumptions and can achieve superlinear rates when directions are chosen appropriately. Numerical experiments highlight the simplicity and efficiency of this approach.
-
 ---
 
 ## Usage
