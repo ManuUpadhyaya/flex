@@ -10,6 +10,7 @@ sys.path.append(src_dir)
 
 from utils import (
     plot_performance,
+    plot_tau_history,
     LATEX_KEY_MAP,
     sanitize_filename,
     setup_problem_qmp_n20_alpha0,
@@ -43,13 +44,13 @@ def setup_problem_configurations():
     """
     problem_configurations = []
 
-    problem_configurations.append(setup_problem_qmp_n20_alpha0()) # Quadratic minimax problem: n=20, alpha=0
+    problem_configurations.append(setup_problem_qmp_n20_alpha0(0)) # Quadratic minimax problem: n=20, alpha=0
 
-    problem_configurations.append(setup_problem_qmp_n20_alpha_pos()) # Quadratic minimax problem: n=20, alpha=0.0001
+    problem_configurations.append(setup_problem_qmp_n20_alpha_pos(0)) # Quadratic minimax problem: n=20, alpha=0.0001
 
-    problem_configurations.append(setup_problem_qmp_n500_alpha0()) # Quadratic minimax problem: n=500, alpha=0
+    problem_configurations.append(setup_problem_qmp_n500_alpha0(0)) # Quadratic minimax problem: n=500, alpha=0
 
-    problem_configurations.append(setup_problem_qmp_n500_alpha_pos()) # Quadratic minimax problem: n=500, alpha=0.0001
+    problem_configurations.append(setup_problem_qmp_n500_alpha_pos(0)) # Quadratic minimax problem: n=500, alpha=0.0001
 
     problem_configurations.append(setup_problem_cnep_n10()) # Cournot-Nash Equilibrium Problem: n=10
 
@@ -257,6 +258,49 @@ def generate_plots(problem_label, results_list, labels_list, problem_parameters,
         title=plot_title,
         filename=os.path.join(problem_plot_dir, f'{base_filename}_time.png')
     )
+
+    # Generate tau history plots for FLEX-family solvers if available
+    for results, label in zip(results_list, labels_list):
+        tau_values = results.get('tau')
+        if not tau_values:
+            continue
+
+        filtered_tau = [tau for tau in tau_values if tau is not None]
+        if not filtered_tau:
+            continue
+
+        total = len(filtered_tau)
+        if total == 0:
+            continue
+
+        tol = 1e-12
+        ones = sum(1 for tau in filtered_tau if abs(tau - 1.0) <= tol)
+        zeros = sum(1 for tau in filtered_tau if abs(tau) <= tol)
+        between = total - ones - zeros
+
+        perc_one = 100 * ones / total
+        perc_between = 100 * between / total
+        perc_zero = 100 * zeros / total
+
+        tau_title = (
+            f"{plot_title}\\\\{label}: "
+            f"$\\tau_k=1$ ({perc_one:.1f})\\%, "
+            f"$0<\\tau_k<1$ ({perc_between:.1f})\\%, "
+            f"$\\tau_k=0$ ({perc_zero:.1f})\\%"
+        )
+
+        tau_filename = os.path.join(
+            problem_plot_dir,
+            f"{sanitize_filename(label)}_tau.png"
+        )
+
+        plot_tau_history(
+            results,
+            label,
+            x_label_iterations,
+            tau_title,
+            tau_filename
+        )
 
     print(f"Done.\n")
 

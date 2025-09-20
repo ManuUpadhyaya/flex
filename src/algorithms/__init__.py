@@ -17,6 +17,7 @@ from .aa_type_i import AAI
 from .aa_type_ii import AAII
 from .broyden import Broyden
 from .jsymmetric import Jsymmetric
+from .regularized_newton import RegularizedNewton
 
 __all__ = [
     'IterativeAlgorithm',
@@ -35,5 +36,6 @@ __all__ = [
     'AAI',
     'AAII',
     'Broyden',
-    'Jsymmetric'
+    'Jsymmetric',
+    'RegularizedNewton',
 ]

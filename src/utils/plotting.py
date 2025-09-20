@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib
+import numpy as np
 from itertools import cycle
 
 def setup_matplotlib():
@@ -92,3 +93,46 @@ def plot_performance(results_list, labels_list, x_metric, y_metric, x_label, y_l
     plt.tight_layout()
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
+
+
+def plot_tau_history(results, label, x_label, title, filename):
+    """
+    Plots the step-size sequence tau_k for a single FLEX-family solver.
+
+    Parameters:
+        results (dict): Result dictionary for one algorithm run.
+        label (str): Algorithm label for the legend/title context.
+        x_label (str): Label for the x-axis.
+        title (str): Plot title (already includes fractions summary).
+        filename (str): Output path for the saved figure.
+    """
+    iterations = results.get('iterations')
+    tau_values = results.get('tau')
+
+    if iterations is None or tau_values is None:
+        return False
+
+    filtered = [(k, tau) for k, tau in zip(iterations, tau_values) if tau is not None]
+    if not filtered:
+        return False
+
+    ks, taus = zip(*filtered)
+    taus = np.asarray(taus, dtype=float)
+
+    setup_matplotlib()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    ax.plot(ks, taus, linestyle='None', marker='o', markersize=4)
+
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(r'$\tau_k$', rotation=0, labelpad=25)
+    ax.yaxis.set_label_coords(-0.06, 0.5)
+    ax.set_ylim(-0.05, 1.05)
+    ax.set_title(title)
+    ax.grid(True, which='both', ls='--')
+
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+    return True

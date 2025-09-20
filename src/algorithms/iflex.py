@@ -50,6 +50,7 @@ class IFLEX(IterativeAlgorithm):
         self.zk = z0.copy()
 
         self.direction = direction
+        self._tau_history = []
 
     def run(self):
         """
@@ -64,6 +65,7 @@ class IFLEX(IterativeAlgorithm):
         if not self.ignore_starting_point:
             perf_metric = self.performance_evaluator(zk=zk, Fzk=Fzk)
             self.record_performance(iteration=0, perf_metric=perf_metric)
+            self._tau_history.append(None)
 
             if self.has_converged(perf_metric=perf_metric, tol=self.tol):
                 print(f"    {self.__class__.__name__} converged at iteration 0")
@@ -80,12 +82,14 @@ class IFLEX(IterativeAlgorithm):
             dk, success = self.direction.compute_direction(zk, zbar, wk, Fzk, Fzbar, k)
 
             if not success:
+                tau_k = 0.0
                 zk_plus_1 = wk
                 Fzk_plus_1 = self.problem.F(zk_plus_1)
                 self.total_F_evals += 1
 
                 perf_metric = self.performance_evaluator(zk=zk_plus_1, Fzk=Fzk_plus_1)
                 self.record_performance(iteration=k, perf_metric=perf_metric)
+                self._tau_history.append(tau_k)
 
                 if self.has_converged(perf_metric=perf_metric, tol=self.tol):
                     print(f"    {self.__class__.__name__} converged at iteration {k}")
@@ -115,8 +119,8 @@ class IFLEX(IterativeAlgorithm):
 
             m = 0
             while True:
-                tau_m = self.beta ** m
-                zk_plus_1 = (1 - tau_m) * wk + tau_m * zk_dk
+                tau_k = self.beta ** m
+                zk_plus_1 = (1 - tau_k) * wk + tau_k * zk_dk
                 Fzk_plus_1 = self.problem.F(zk_plus_1)
                 self.total_F_evals += 1
 
@@ -129,6 +133,7 @@ class IFLEX(IterativeAlgorithm):
 
             perf_metric = self.performance_evaluator(zk=zk_plus_1, Fzk=Fzk_plus_1)
             self.record_performance(iteration=k, perf_metric=perf_metric)
+            self._tau_history.append(tau_k)
 
             if self.has_converged(perf_metric=perf_metric, tol=self.tol):
                 print(f"    {self.__class__.__name__} converged at iteration {k}")
@@ -148,3 +153,8 @@ class IFLEX(IterativeAlgorithm):
             zk, Fzk, zbar, Fzbar, wk = zk_plus_1, Fzk_plus_1, zbar_plus_1, Fzbar_plus_1, wk_plus_1
 
         return zk
+
+    def get_results(self):
+        results = super().get_results()
+        results['tau'] = self._tau_history
+        return results

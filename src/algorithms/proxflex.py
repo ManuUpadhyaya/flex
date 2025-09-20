@@ -57,6 +57,7 @@ class ProxFLEX(IterativeAlgorithm):
 
         self.zk = z0.copy()
         self.direction = direction
+        self._tau_history = []
 
     def run(self):
         """
@@ -80,6 +81,7 @@ class ProxFLEX(IterativeAlgorithm):
         if not self.ignore_starting_point:
             perf_metric = self.performance_evaluator(zk=zk, Fzk=Fzk)
             self.record_performance(iteration=0, perf_metric=perf_metric)
+            self._tau_history.append(None)
 
             if self.has_converged(perf_metric=perf_metric, tol=self.tol):
                 print(f"    {self.__class__.__name__} converged at iteration 0")
@@ -100,6 +102,7 @@ class ProxFLEX(IterativeAlgorithm):
             dk, success = self.direction.compute_direction(zk, zbar, wk, Fzk, Fzbar, k)
 
             if not success:
+                tau_k = 0.0
                 zk_plus_1 = wk
                 Fzk_plus_1 = self.problem.F(zk_plus_1)
                 self.total_F_evals += 1
@@ -115,6 +118,7 @@ class ProxFLEX(IterativeAlgorithm):
 
                 perf_metric = self.performance_evaluator(zk=zk_plus_1, Fzk=Fzk_plus_1)
                 self.record_performance(iteration=k, perf_metric=perf_metric)
+                self._tau_history.append(tau_k)
 
                 if self.has_converged(perf_metric=perf_metric, tol=self.tol):
                     print(f"    {self.__class__.__name__} converged at iteration {k}")
@@ -153,6 +157,7 @@ class ProxFLEX(IterativeAlgorithm):
 
             # Test linear contraction: V_{k+1} <= (rho^2) * V_k
             if V_from_zk_dk <= rho**2 * V_k:
+                tau_k = 1.0
                 zk_plus_1 = zk_dk
                 Fzk_plus_1 = Fzk_dk
                 zbar_plus_1 = zbar_from_zk_dk
@@ -168,8 +173,8 @@ class ProxFLEX(IterativeAlgorithm):
                 )
                 m = 1
                 while m <= M:
-                    tau_m = beta**m
-                    zk_plus_1 = (1 - tau_m) * wk + tau_m * zk_dk
+                    tau_k = beta**m
+                    zk_plus_1 = (1 - tau_k) * wk + tau_k * zk_dk
 
                     Fzk_plus_1 = self.problem.F(zk_plus_1)
                     self.total_F_evals += 1
@@ -193,6 +198,8 @@ class ProxFLEX(IterativeAlgorithm):
 
                 if m > M:
                     # If the line search exhausts M steps
+                    tau_k = 0.0
+                    
                     zk_plus_1 = wk
 
                     Fzk_plus_1 = self.problem.F(zk_plus_1)
@@ -213,6 +220,7 @@ class ProxFLEX(IterativeAlgorithm):
 
             perf_metric = self.performance_evaluator(zk=zk_plus_1, Fzk=Fzk_plus_1)
             self.record_performance(iteration=k, perf_metric=perf_metric)
+            self._tau_history.append(tau_k)
 
             if self.has_converged(perf_metric=perf_metric, tol=self.tol):
                 print(f"    {self.__class__.__name__} converged at iteration {k}")
@@ -230,6 +238,11 @@ class ProxFLEX(IterativeAlgorithm):
             V_k = V_k_plus_1
 
         return zk
+
+    def get_results(self):
+        results = super().get_results()
+        results['tau'] = self._tau_history
+        return results
 
     def compute_V(self, zk, zbar, wk, Fzk, Fzbar):
         """

@@ -1,6 +1,6 @@
 from .filename_utils import sanitize_filename
 from .latex_utils import LATEX_KEY_MAP
-from .plotting import plot_performance
+from .plotting import plot_performance, plot_tau_history
 from .data_utils import get_data_filepath, save_results, load_results, get_num_datapoints
 from .setup_problems import (
     setup_problem_qmp_n20_alpha0,
@@ -24,6 +24,7 @@ __all__ = [
     'sanitize_filename',
     'LATEX_KEY_MAP',
     'plot_performance',
+    'plot_tau_history',
     'get_data_filepath',
     'save_results',
     'load_results',

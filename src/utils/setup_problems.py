@@ -5,20 +5,20 @@ import numpy as np
 from .data_utils import get_num_datapoints
 
 from problems import (
-    QuadraticMinimaxProblem, 
-    RotationR2Problem, 
-    CournotNashProblem, 
+    QuadraticMinimaxProblem,
+    RotationR2Problem,
+    CournotNashProblem,
     LogisticRegressionProblem,
     BilinearZeroSumGameProblem
 )
 
 from algorithms import (
     Extragradient, EAGC, GRAAL, AGRAAL, EGAA, FISTA,
-    AdaptiveProximalGradient, FLEX, IFLEX, ProxFLEX, SolodovSvaiter
+    FLEX, IFLEX, ProxFLEX
 )
 
 from algorithms import (
-    AAI, AAII, Jsymmetric, Broyden
+    AAI, AAII, Jsymmetric, RegularizedNewton
 )
 
 
@@ -59,7 +59,7 @@ def configure_algorithms(problem, algorithm_configs):
     
     return algorithms
 
-def setup_problem_qmp_n20_alpha0():
+def setup_problem_qmp_n20_alpha0(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
     # Quadratic minimax problem: n = 20, alpha = 0
     # -----------------------------------------------------------------------------------
@@ -161,32 +161,6 @@ def setup_problem_qmp_n20_alpha0():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'FLEX-Broyden',
-        #     'class': FLEX,
-        #     'force_run': False,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,                   
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'gamma': 0.9 / problem.L,
-        #         'sigma': FLEX_sigma,
-        #         'M': FLEX_M, 
-        #         'beta': FLEX_beta,
-        #         'rho': FLEX_rho,     
-        #         'tol': tol,
-        #         'direction': Broyden(
-        #             dim_z=problem.dim_z, 
-        #             gamma=0.9 / problem.L, 
-        #             fix_point_operator=fix_point_operator, 
-        #             theta_bar=0.2, 
-        #             algorithm_variant='g_zero'
-        #         ),
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
         {
             'label': 'EG',
             'class': Extragradient,
@@ -260,22 +234,41 @@ def setup_problem_qmp_n20_alpha0():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'Solodov-Svaiter',
-        #     'class': SolodovSvaiter,
-        #     'force_run': False,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'tol': tol,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
     ]
-    
+
+    if reg_newton_only == 1:
+        reg_newton_algorithms = [
+            {
+                'label': 'FLEX-RegNewton',
+                'class': FLEX,
+                'force_run': False,
+                'params': {
+                    'problem': problem,
+                    'z0': z0,
+                    'max_iter': max_iter,
+                    'performance_evaluator': performance_evaluator_qmp,
+                    'stopping_criterion': stopping_criterion_qmp,
+                    'gamma': 0.9 / problem.L,
+                    'sigma': FLEX_sigma,
+                    'M': FLEX_M,
+                    'beta': FLEX_beta,
+                    'rho': FLEX_rho,
+                    'tol': tol,
+                    'direction': RegularizedNewton(problem=problem),
+                    'ignore_starting_point': ignore_starting_point
+                }
+            }
+        ]
+
+        algorithm_configs.extend(reg_newton_algorithms)
+
+        allowed_labels = {'EG', 'FLEX-RegNewton'}
+        if any(cfg['label'] == 'IFLEX-RegNewton' for cfg in algorithm_configs):
+            allowed_labels.add('IFLEX-RegNewton')
+        algorithm_configs = [
+            cfg for cfg in algorithm_configs if cfg['label'] in allowed_labels
+        ]
+
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
     
     config = {
@@ -292,7 +285,7 @@ def setup_problem_qmp_n20_alpha0():
     return config
 
 
-def setup_problem_qmp_n20_alpha_pos():
+def setup_problem_qmp_n20_alpha_pos(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
     # Quadratic minimax problem: n = 20, alpha = 0.0001
     # -----------------------------------------------------------------------------------
@@ -400,32 +393,6 @@ def setup_problem_qmp_n20_alpha_pos():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'FLEX-Broyden',
-        #     'class': FLEX,
-        #     'force_run': force_run,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,                   
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'gamma': 0.9 / problem.L,
-        #         'sigma': FLEX_sigma,
-        #         'M': FLEX_M, 
-        #         'beta': FLEX_beta,
-        #         'rho': FLEX_rho,     
-        #         'tol': tol,
-        #         'direction': Broyden(
-        #             dim_z=problem.dim_z, 
-        #             gamma=0.9 / problem.L, 
-        #             fix_point_operator=fix_point_operator, 
-        #             theta_bar=0.2, 
-        #             algorithm_variant='g_zero'
-        #         ),
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
         {
             'label': 'IFLEX-AAI',
             'class': IFLEX,
@@ -491,30 +458,6 @@ def setup_problem_qmp_n20_alpha_pos():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'IFLEX-Broyden',
-        #     'class': IFLEX,
-        #     'force_run': force_run,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'gamma': 0.9 / problem.L,
-        #         'sigma': IFLEX_sigma,
-        #         'beta': IFLEX_beta,
-        #         'tol': tol,
-        #         'direction': Broyden(
-        #             dim_z=problem.dim_z, 
-        #             gamma=0.9 / problem.L, 
-        #             fix_point_operator=fix_point_operator, 
-        #             theta_bar=0.2, 
-        #             algorithm_variant='g_zero'
-        #         ),
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
         {
             'label': 'EG',
             'class': Extragradient,
@@ -588,22 +531,57 @@ def setup_problem_qmp_n20_alpha_pos():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'Solodov-Svaiter',
-        #     'class': SolodovSvaiter,
-        #     'force_run': False,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'tol': tol,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
     ]
-    
+
+    if reg_newton_only == 1:
+        reg_newton_algorithms = [
+            {
+                'label': 'FLEX-RegNewton',
+                'class': FLEX,
+                'force_run': force_run,
+                'params': {
+                    'problem': problem,
+                    'z0': z0,
+                    'max_iter': max_iter,
+                    'performance_evaluator': performance_evaluator_qmp,
+                    'stopping_criterion': stopping_criterion_qmp,
+                    'gamma': 0.9 / problem.L,
+                    'sigma': FLEX_sigma,
+                    'M': FLEX_M,
+                    'beta': FLEX_beta,
+                    'rho': FLEX_rho,
+                    'tol': tol,
+                    'direction': RegularizedNewton(problem=problem),
+                    'ignore_starting_point': ignore_starting_point
+                }
+            },
+            {
+                'label': 'IFLEX-RegNewton',
+                'class': IFLEX,
+                'force_run': force_run,
+                'params': {
+                    'problem': problem,
+                    'z0': z0,
+                    'max_iter': max_iter,
+                    'performance_evaluator': performance_evaluator_qmp,
+                    'stopping_criterion': stopping_criterion_qmp,
+                    'gamma': 0.9 / problem.L,
+                    'sigma': IFLEX_sigma,
+                    'beta': IFLEX_beta,
+                    'tol': tol,
+                    'direction': RegularizedNewton(problem=problem),
+                    'ignore_starting_point': ignore_starting_point
+                }
+            }
+        ]
+
+        algorithm_configs.extend(reg_newton_algorithms)
+
+        allowed_labels = {'EG', 'FLEX-RegNewton', 'IFLEX-RegNewton'}
+        algorithm_configs = [
+            cfg for cfg in algorithm_configs if cfg['label'] in allowed_labels
+        ]
+
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
     
     config = {
@@ -619,7 +597,7 @@ def setup_problem_qmp_n20_alpha_pos():
 
     return config
 
-def setup_problem_qmp_n500_alpha0():
+def setup_problem_qmp_n500_alpha0(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
     # Quadratic minimax problem: n = 500, alpha = 0
     # -----------------------------------------------------------------------------------
@@ -721,32 +699,6 @@ def setup_problem_qmp_n500_alpha0():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'FLEX-Broyden',
-        #     'class': FLEX,
-        #     'force_run': False,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,                   
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'gamma': 0.9 / problem.L,
-        #         'sigma': FLEX_sigma,
-        #         'M': FLEX_M, 
-        #         'beta': FLEX_beta,
-        #         'rho': FLEX_rho,     
-        #         'tol': tol,
-        #         'direction': Broyden(
-        #             dim_z=problem.dim_z, 
-        #             gamma=0.9 / problem.L, 
-        #             fix_point_operator=fix_point_operator, 
-        #             theta_bar=0.2, 
-        #             algorithm_variant='g_zero'
-        #         ),
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
         {
             'label': 'EG',
             'class': Extragradient,
@@ -820,22 +772,41 @@ def setup_problem_qmp_n500_alpha0():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'Solodov-Svaiter',
-        #     'class': SolodovSvaiter,
-        #     'force_run': False,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'tol': tol,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
     ]
-    
+
+    if reg_newton_only == 1:
+        reg_newton_algorithms = [
+            {
+                'label': 'FLEX-RegNewton',
+                'class': FLEX,
+                'force_run': False,
+                'params': {
+                    'problem': problem,
+                    'z0': z0,
+                    'max_iter': max_iter,
+                    'performance_evaluator': performance_evaluator_qmp,
+                    'stopping_criterion': stopping_criterion_qmp,
+                    'gamma': 0.9 / problem.L,
+                    'sigma': FLEX_sigma,
+                    'M': FLEX_M,
+                    'beta': FLEX_beta,
+                    'rho': FLEX_rho,
+                    'tol': tol,
+                    'direction': RegularizedNewton(problem=problem),
+                    'ignore_starting_point': ignore_starting_point
+                }
+            }
+        ]
+
+        algorithm_configs.extend(reg_newton_algorithms)
+
+        allowed_labels = {'EG', 'FLEX-RegNewton'}
+        if any(cfg['label'] == 'IFLEX-RegNewton' for cfg in algorithm_configs):
+            allowed_labels.add('IFLEX-RegNewton')
+        algorithm_configs = [
+            cfg for cfg in algorithm_configs if cfg['label'] in allowed_labels
+        ]
+
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
     
     config = {
@@ -851,7 +822,7 @@ def setup_problem_qmp_n500_alpha0():
 
     return config
 
-def setup_problem_qmp_n500_alpha_pos():
+def setup_problem_qmp_n500_alpha_pos(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
     # Quadratic minimax problem: n = 500, alpha = 0.0001
     # -----------------------------------------------------------------------------------
@@ -959,32 +930,6 @@ def setup_problem_qmp_n500_alpha_pos():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'FLEX-Broyden',
-        #     'class': FLEX,
-        #     'force_run': force_run,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,                   
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'gamma': 0.9 / problem.L,
-        #         'sigma': FLEX_sigma,
-        #         'M': FLEX_M, 
-        #         'beta': FLEX_beta,
-        #         'rho': FLEX_rho,     
-        #         'tol': tol,
-        #         'direction': Broyden(
-        #             dim_z=problem.dim_z, 
-        #             gamma=0.9 / problem.L, 
-        #             fix_point_operator=fix_point_operator, 
-        #             theta_bar=0.2, 
-        #             algorithm_variant='g_zero'
-        #         ),
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
         {
             'label': 'IFLEX-AAI',
             'class': IFLEX,
@@ -1050,30 +995,6 @@ def setup_problem_qmp_n500_alpha_pos():
                 'ignore_starting_point': ignore_starting_point
             }
         },
-        # {
-        #     'label': 'IFLEX-Broyden',
-        #     'class': IFLEX,
-        #     'force_run': force_run,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'gamma': 0.9 / problem.L,
-        #         'sigma': IFLEX_sigma,
-        #         'beta': IFLEX_beta,
-        #         'tol': tol,
-        #         'direction': Broyden(
-        #             dim_z=problem.dim_z, 
-        #             gamma=0.9 / problem.L, 
-        #             fix_point_operator=fix_point_operator, 
-        #             theta_bar=0.2, 
-        #             algorithm_variant='g_zero'
-        #         ),
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
         {
             'label': 'EG',
             'class': Extragradient,
@@ -1146,23 +1067,58 @@ def setup_problem_qmp_n500_alpha_pos():
                 't': 0.9 / problem.L,
                 'ignore_starting_point': ignore_starting_point
             }
-        },
-        # {
-        #     'label': 'Solodov-Svaiter',
-        #     'class': SolodovSvaiter,
-        #     'force_run': False,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_qmp,
-        #         'stopping_criterion': stopping_criterion_qmp,
-        #         'tol': tol,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # },
+        }
     ]
-    
+
+    if reg_newton_only == 1:
+        reg_newton_algorithms = [
+            {
+                'label': 'FLEX-RegNewton',
+                'class': FLEX,
+                'force_run': force_run,
+                'params': {
+                    'problem': problem,
+                    'z0': z0,
+                    'max_iter': max_iter,
+                    'performance_evaluator': performance_evaluator_qmp,
+                    'stopping_criterion': stopping_criterion_qmp,
+                    'gamma': 0.9 / problem.L,
+                    'sigma': FLEX_sigma,
+                    'M': FLEX_M,
+                    'beta': FLEX_beta,
+                    'rho': FLEX_rho,
+                    'tol': tol,
+                    'direction': RegularizedNewton(problem=problem),
+                    'ignore_starting_point': ignore_starting_point
+                }
+            },
+            {
+                'label': 'IFLEX-RegNewton',
+                'class': IFLEX,
+                'force_run': force_run,
+                'params': {
+                    'problem': problem,
+                    'z0': z0,
+                    'max_iter': max_iter,
+                    'performance_evaluator': performance_evaluator_qmp,
+                    'stopping_criterion': stopping_criterion_qmp,
+                    'gamma': 0.9 / problem.L,
+                    'sigma': IFLEX_sigma,
+                    'beta': IFLEX_beta,
+                    'tol': tol,
+                    'direction': RegularizedNewton(problem=problem),
+                    'ignore_starting_point': ignore_starting_point
+                }
+            }
+        ]
+
+        algorithm_configs.extend(reg_newton_algorithms)
+
+        allowed_labels = {'EG', 'FLEX-RegNewton', 'IFLEX-RegNewton'}
+        algorithm_configs = [
+            cfg for cfg in algorithm_configs if cfg['label'] in allowed_labels
+        ]
+
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
     
     config = {
@@ -1822,23 +1778,7 @@ def setup_problem_logistic_data_spambase_lambda_1_over_N():
                 'L_f': problem.L,
                 'ignore_starting_point': ignore_starting_point
             }
-        },
-        # {
-        #     'label': 'Adaptive proximal gradient',
-        #     'class': AdaptiveProximalGradient,
-        #     'force_run': force_run_other,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_logistic,
-        #         'stopping_criterion': stopping_criterion_logistic,
-        #         'tol': tol,
-        #         'sigma0': 1.9 / problem.L,  # Initial step size σ0 > 0
-        #         'theta0': 1/3,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # }
+        }
     ]
 
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
@@ -2002,23 +1942,7 @@ def setup_problem_logistic_data_spambase_lambda_10_over_N():
                 'L_f': problem.L,
                 'ignore_starting_point': ignore_starting_point
             }
-        },
-        # {
-        #     'label': 'Adaptive proximal gradient',
-        #     'class': AdaptiveProximalGradient,
-        #     'force_run': force_run_other,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_logistic,
-        #         'stopping_criterion': stopping_criterion_logistic,
-        #         'tol': tol,
-        #         'sigma0': 1.9 / problem.L,  # Initial step size σ0 > 0
-        #         'theta0': 1/3,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # }
+        }
     ]
 
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
@@ -2182,23 +2106,7 @@ def setup_problem_logistic_data_spambase_lambda_100_over_N():
                 'L_f': problem.L,
                 'ignore_starting_point': ignore_starting_point
             }
-        },
-        # {
-        #     'label': 'Adaptive proximal gradient',
-        #     'class': AdaptiveProximalGradient,
-        #     'force_run': force_run_other,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_logistic,
-        #         'stopping_criterion': stopping_criterion_logistic,
-        #         'tol': tol,
-        #         'sigma0': 1.9 / problem.L,  # Initial step size σ0 > 0
-        #         'theta0': 1/3,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # }
+        }
     ]
 
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
@@ -2364,23 +2272,7 @@ def setup_problem_logistic_data_a9a_lambda_1_over_N():
                 'L_f': problem.L,
                 'ignore_starting_point': ignore_starting_point
             }
-        },
-        # {
-        #     'label': 'Adaptive proximal gradient',
-        #     'class': AdaptiveProximalGradient,
-        #     'force_run': force_run_other,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_logistic,
-        #         'stopping_criterion': stopping_criterion_logistic,
-        #         'tol': tol,
-        #         'sigma0': 1.9 / problem.L,  # Initial step size σ0 > 0
-        #         'theta0': 1/3,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # }
+        }
     ]
 
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
@@ -2546,23 +2438,7 @@ def setup_problem_logistic_data_a9a_lambda_10_over_N():
                 'L_f': problem.L,
                 'ignore_starting_point': ignore_starting_point
             }
-        },
-        # {
-        #     'label': 'Adaptive proximal gradient',
-        #     'class': AdaptiveProximalGradient,
-        #     'force_run': force_run_other,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_logistic,
-        #         'stopping_criterion': stopping_criterion_logistic,
-        #         'tol': tol,
-        #         'sigma0': 1.9 / problem.L,  # Initial step size σ0 > 0
-        #         'theta0': 1/3,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # }
+        }
     ]
 
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
@@ -2728,23 +2604,7 @@ def setup_problem_logistic_data_a9a_lambda_100_over_N():
                 'L_f': problem.L,
                 'ignore_starting_point': ignore_starting_point
             }
-        },
-        # {
-        #     'label': 'Adaptive proximal gradient',
-        #     'class': AdaptiveProximalGradient,
-        #     'force_run': force_run_other,
-        #     'params': {
-        #         'problem': problem,
-        #         'z0': z0,
-        #         'max_iter': max_iter,
-        #         'performance_evaluator': performance_evaluator_logistic,
-        #         'stopping_criterion': stopping_criterion_logistic,
-        #         'tol': tol,
-        #         'sigma0': 1.9 / problem.L,  # Initial step size σ0 > 0
-        #         'theta0': 1/3,
-        #         'ignore_starting_point': ignore_starting_point
-        #     }
-        # }
+        }
     ]
 
     algorithms = configure_algorithms(problem=problem, algorithm_configs=algorithm_configs)
