@@ -22,17 +22,17 @@ class QuadraticMinimaxProblem(Problem):
         y_star (np.ndarray): Optimal y value.
     """
 
-    def __init__(self, n: int, alpha: float = 0.5, seed: int = None):
+    def __init__(self, n: int, omega: float = 0.5, seed: int = None):
         """
         Initializes the QuadraticMinimaxProblem with generated data.
 
         Parameters:
             n (int): Dimension of x and y individually (each in R^n).
-            alpha (float): Scaling parameter in [0, 1] for matrices A and B.
+            omega (float): Scaling parameter in [0, 1] for matrices A and B.
             seed (int, optional): Seed for random number generators.
         """
         self.n_single = n  # Dimension of x and y individually
-        self.alpha = alpha  # Scaling parameter for A and B
+        self.omega = omega  # Scaling parameter for A and B
 
         # Initialize random number generator
         rng = default_rng(seed)
@@ -42,10 +42,10 @@ class QuadraticMinimaxProblem(Problem):
         self.y_star = rng.standard_normal(n)
 
         # Generate matrix A
-        self.A = self.alpha * self._generate_pd_matrix(n, rng)
+        self.A = self.omega * self._generate_pd_matrix(n, rng)
 
         # Generate matrix B
-        self.B = self.alpha * self._generate_pd_matrix(n, rng)
+        self.B = self.omega * self._generate_pd_matrix(n, rng)
 
         # Generate matrix C 
         self.C = self._generate_matrix(n, rng)

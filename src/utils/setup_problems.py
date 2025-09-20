@@ -59,17 +59,17 @@ def configure_algorithms(problem, algorithm_configs):
     
     return algorithms
 
-def setup_problem_qmp_n20_alpha0(reg_newton_only=0):
+def setup_problem_qmp_n20_omega0(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
-    # Quadratic minimax problem: n = 20, alpha = 0
+    # Quadratic minimax problem: n = 20, omega = 0
     # -----------------------------------------------------------------------------------
     problem_label = 'quadratic minimax problem'
 
     # Initialize the problem
     n = 20
-    alpha = 0
+    omega = 0
     seed = 42
-    problem = QuadraticMinimaxProblem(n=n, alpha=alpha, seed=seed)
+    problem = QuadraticMinimaxProblem(n=n, omega=omega, seed=seed)
     z0 = np.zeros(problem.dim_z)
     
     # Define problem-specific performance evaluator and stopping criterion
@@ -276,7 +276,7 @@ def setup_problem_qmp_n20_alpha0(reg_newton_only=0):
         'algorithms': algorithms,
         'parameters': {
             'n': n, 
-            'alpha': alpha
+            'omega': omega
         },
         'problem_instance': problem,  
         'count_operator_evals': False
@@ -285,17 +285,17 @@ def setup_problem_qmp_n20_alpha0(reg_newton_only=0):
     return config
 
 
-def setup_problem_qmp_n20_alpha_pos(reg_newton_only=0):
+def setup_problem_qmp_n20_omega_pos(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
-    # Quadratic minimax problem: n = 20, alpha = 0.0001
+    # Quadratic minimax problem: n = 20, omega = 0.0001
     # -----------------------------------------------------------------------------------
     problem_label = 'quadratic minimax problem'
 
     # Initialize the problem
     n = 20
-    alpha = 0.0001
+    omega = 0.0001
     seed = 42
-    problem = QuadraticMinimaxProblem(n=n, alpha=alpha, seed=seed)
+    problem = QuadraticMinimaxProblem(n=n, omega=omega, seed=seed)
     z0 = np.zeros(problem.dim_z)
     
     # Define problem-specific performance evaluator and stopping criterion
@@ -589,7 +589,7 @@ def setup_problem_qmp_n20_alpha_pos(reg_newton_only=0):
         'algorithms': algorithms,
         'parameters': {
             'n': n, 
-            'alpha': alpha
+            'omega': omega
         },
         'problem_instance': problem,  
         'count_operator_evals': False
@@ -597,17 +597,17 @@ def setup_problem_qmp_n20_alpha_pos(reg_newton_only=0):
 
     return config
 
-def setup_problem_qmp_n500_alpha0(reg_newton_only=0):
+def setup_problem_qmp_n500_omega0(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
-    # Quadratic minimax problem: n = 500, alpha = 0
+    # Quadratic minimax problem: n = 500, omega = 0
     # -----------------------------------------------------------------------------------
     problem_label = 'quadratic minimax problem'
 
     # Initialize the problem
     n = 500
-    alpha = 0
+    omega = 0
     seed = 42
-    problem = QuadraticMinimaxProblem(n=n, alpha=alpha, seed=seed)
+    problem = QuadraticMinimaxProblem(n=n, omega=omega, seed=seed)
     z0 = np.zeros(problem.dim_z)
     
     # Define problem-specific performance evaluator and stopping criterion
@@ -814,7 +814,7 @@ def setup_problem_qmp_n500_alpha0(reg_newton_only=0):
         'algorithms': algorithms,
         'parameters': {
             'n': n, 
-            'alpha': alpha
+            'omega': omega
         },
         'problem_instance': problem,  
         'count_operator_evals': False
@@ -822,17 +822,17 @@ def setup_problem_qmp_n500_alpha0(reg_newton_only=0):
 
     return config
 
-def setup_problem_qmp_n500_alpha_pos(reg_newton_only=0):
+def setup_problem_qmp_n500_omega_pos(reg_newton_only=0):
     # -----------------------------------------------------------------------------------
-    # Quadratic minimax problem: n = 500, alpha = 0.0001
+    # Quadratic minimax problem: n = 500, omega = 0.0001
     # -----------------------------------------------------------------------------------
     problem_label = 'quadratic minimax problem'
 
     # Initialize the problem
     n = 500
-    alpha = 0.0001
+    omega = 0.0001
     seed = 42
-    problem = QuadraticMinimaxProblem(n=n, alpha=alpha, seed=seed)
+    problem = QuadraticMinimaxProblem(n=n, omega=omega, seed=seed)
     z0 = np.zeros(problem.dim_z)
     
     # Define problem-specific performance evaluator and stopping criterion
@@ -1126,7 +1126,7 @@ def setup_problem_qmp_n500_alpha_pos(reg_newton_only=0):
         'algorithms': algorithms,
         'parameters': {
             'n': n, 
-            'alpha': alpha
+            'omega': omega
         },
         'problem_instance': problem,  
         'count_operator_evals': False

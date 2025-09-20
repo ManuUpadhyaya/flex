@@ -13,10 +13,10 @@ from utils import (
     plot_tau_history,
     LATEX_KEY_MAP,
     sanitize_filename,
-    setup_problem_qmp_n20_alpha0,
-    setup_problem_qmp_n20_alpha_pos,
-    setup_problem_qmp_n500_alpha0,
-    setup_problem_qmp_n500_alpha_pos,
+    setup_problem_qmp_n20_omega0,
+    setup_problem_qmp_n20_omega_pos,
+    setup_problem_qmp_n500_omega0,
+    setup_problem_qmp_n500_omega_pos,
     setup_problem_cnep_n10,
     setup_problem_cnep_n100,
     setup_problem_logistic_data_a9a_lambda_1_over_N,
@@ -44,13 +44,13 @@ def setup_problem_configurations():
     """
     problem_configurations = []
 
-    problem_configurations.append(setup_problem_qmp_n20_alpha0(0)) # Quadratic minimax problem: n=20, alpha=0
+    problem_configurations.append(setup_problem_qmp_n20_omega0(0)) # Quadratic minimax problem: n=20, omega=0
 
-    problem_configurations.append(setup_problem_qmp_n20_alpha_pos(0)) # Quadratic minimax problem: n=20, alpha=0.0001
+    problem_configurations.append(setup_problem_qmp_n20_omega_pos(0)) # Quadratic minimax problem: n=20, omega=0.0001
 
-    problem_configurations.append(setup_problem_qmp_n500_alpha0(0)) # Quadratic minimax problem: n=500, alpha=0
+    problem_configurations.append(setup_problem_qmp_n500_omega0(0)) # Quadratic minimax problem: n=500, omega=0
 
-    problem_configurations.append(setup_problem_qmp_n500_alpha_pos(0)) # Quadratic minimax problem: n=500, alpha=0.0001
+    problem_configurations.append(setup_problem_qmp_n500_omega_pos(0)) # Quadratic minimax problem: n=500, omega=0.0001
 
     problem_configurations.append(setup_problem_cnep_n10()) # Cournot-Nash Equilibrium Problem: n=10
 
